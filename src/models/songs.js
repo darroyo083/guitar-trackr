@@ -25,6 +25,6 @@ const Song = connection.define('songs', {
     tablature_url: {
         type: DataTypes.STRING(255),
     },
-})
+});
 
 export default Song;

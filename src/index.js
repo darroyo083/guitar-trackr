@@ -1,7 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import session from 'express-session';
-// import router from './routes/router.js';
+import cors from 'cors';
+import router from './routes/router.js';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import connection from './config/db.js';
+import './models/index.js';  // Importar para configurar relaciones
 
 // Cargar variables de entorno
 dotenv.config();
@@ -11,37 +14,37 @@ const app = express();
 const APP_PORT = process.env.APP_PORT || 3000;
 
 // Configurar middleware
-/* app.use(cors()); */
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
-
-// Configurar motor de plantillas
-app.set('view engine', 'pug');
-app.set('views', 'src/views');
-
-// Configurar sesión
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-        secure: false, // true para HTTPS
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 1 semana
-    }
-}));
-
-app.use((req, res, next) => { 
-    
-    res.locals.user = req.session.user || null; 
-    next();
-});
 
 // Configurar rutas
+app.use('/', router);
 
-// app.use('/', router);
+// Middleware de manejo de errores
+app.use(notFound);
+app.use(errorHandler);
 
 // Iniciar servidor
-app.listen(3000, () => {
-    console.log(`Servidor escuchando en http://localhost:${APP_PORT}`);
-});
+const startServer = async () => {
+    try {
+        // Intentar conectar a la base de datos
+        await connection.authenticate();
+        console.log('Conexión a la base de datos establecida correctamente.');
+        
+        // Sincronizar los modelos con la base de datos
+        await connection.sync({ alter: true });  // En producción cambiar a { alter: true } o quitar
+        console.log('Modelos sincronizados con la base de datos.');
+        
+        // Iniciar el servidor
+        app.listen(3000, () => {
+            console.log(`API de Guitar Trackr escuchando en http://localhost:${APP_PORT}`);
+        });
+    } catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        process.exit(1);
+    }
+};
+
+// Iniciar el servidor
+startServer();

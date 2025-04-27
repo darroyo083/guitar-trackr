@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import connection from '../config/db.js';
-import Song from './songs.js';
 
 const User = connection.define('users', {
     user_id: {
@@ -27,9 +26,6 @@ const User = connection.define('users', {
         type: DataTypes.ENUM('user', 'admin'),
         defaultValue: 'user',
     },
-})
-
-User.belongsToMany(Song, { through: 'user_songs', foreignKey: 'user_id' });
-Song.belongsToMany(User, { through: 'user_songs', foreignKey: 'song_id' });
+});
 
 export default User;

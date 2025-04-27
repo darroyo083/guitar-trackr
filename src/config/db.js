@@ -10,13 +10,13 @@ const connection = new Sequelize(
     {
         host: process.env.DB_HOST,
         dialect: "mysql",
-        port: 3306, // Cambiado para usar la variable de entorno
+        port: 3306,
         define: {
             timestamps: false,
             freezeTableName: true
         },
         retry: {
-            max: 5, // Número máximo de reintentos
+            max: 5,
             match: [
                 /ECONNREFUSED/,
                 /ETIMEDOUT/,
@@ -26,10 +26,5 @@ const connection = new Sequelize(
         }
     }
 );
-
-// Probar la conexión
-connection.authenticate()
-    .then(() => console.log('Conexión a la base de datos establecida'))
-    .catch(err => console.error('Error al conectar a la base de datos:', err));
 
 export default connection;
