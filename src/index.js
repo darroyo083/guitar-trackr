@@ -33,7 +33,7 @@ const startServer = async () => {
         console.log('Conexión a la base de datos establecida correctamente.');
         
         // Sincronizar los modelos con la base de datos
-        await connection.sync({ alter: true });  // En producción cambiar a { alter: true } o quitar
+        await connection.sync();  // { alter: true } entre los parentesis | En producción cambiar a { alter: true } o quitar
         console.log('Modelos sincronizados con la base de datos.');
         
         // Iniciar el servidor
