@@ -3,22 +3,28 @@ services:
     container_name: ${APP_HOST}
     build: .
     restart: unless-stopped
-    ports:
-      - "${APP_PORT}:3000"
+    # ports:
+    #   - "${APP_PORT}:3000"
     volumes:
       - .:/app
       - /app/node_modules
+    environment:
+      - VIRTUAL_HOST=api.guitar-trackr.danielarroyo.dev
+      - LETSENCRYPT_HOST=api.guitar-trackr.danielarroyo.dev
+      - LETSENCRYPT_EMAIL=darroyo083@gmail.com
     depends_on:
       - mysql
     env_file:
       - .env
-
+    networks:
+      - proxy
+      - guitartrackr_internal
   mysql:
     container_name: ${DB_HOST}
     image: mysql:8.0
     restart: unless-stopped
-    ports:
-      - ${DB_PORT}:3306
+    # ports:
+    #   - ${DB_PORT}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
@@ -28,6 +34,15 @@ services:
       - mysql_data:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d:ro
       - ./database/conf/mycustom.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    networks:
+      - guitartrackr_internal
 
 volumes:
   mysql_data:
+  node_modules:
+
+networks:
+  proxy:
+    name: nginx-proxy
+    external: true
+  guitartrackr_internal:
