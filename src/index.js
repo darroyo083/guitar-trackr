@@ -8,9 +8,13 @@ import './models/index.js';  // Importar para configurar relaciones
 
 // Cargar variables de entorno
 dotenv.config();
-
+// const CLIENT_URL = process.env.CLIENT_URL
 // Crear servidor Express
 const app = express();
+// const corsOptions = {
+//     origin: CLIENT_URL,
+    // credentials: true
+// }
 const APP_PORT = process.env.APP_PORT || 3000;
 
 // Configurar middleware
